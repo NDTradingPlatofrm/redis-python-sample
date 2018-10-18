@@ -1,79 +1,27 @@
-using ND.Trading.Bot.Core;
 using ND.Trading.Platform.Models;
-using ND.Trading.Utilities;
+using ND.Trading.Platform.Oanda;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ND.Trading.Platform.TDM
 {
-    public abstract class TDManager : IExchange
+    public class OandaAccountManager
     {
-        private string Name { get; set; }
-        private string MarketName { get; set; }
-        private string[] TickerList { get; set; }
-        private string[] Currencies { get; set; }
-        protected AuthInfo AuthVal { get; set; }
-        protected IApiClient ApiClient { get; set; }
-        protected int ApiDelay { get; set; }
 
-        protected List<AccountConfig> AccountConfigList { get; set; }
-
-        protected TDManager(ExchangeConfig config)
+        public OandaAccount CreateAccount(string accountId, AccountConfig acConfig)
         {
-            Name = config.Name;
-            MarketName = config.Market;
-            ApiDelay = config.ApiDelay;
-           // UniqueStrategyId = config.UniqueStrategyId;
-            AuthVal = new AuthInfo(config.BaseUrl,
-                config.Key,
-                config.Secret,
-                config.Passphrase,
-                config.Token);
-            if (config.Tickers != null)
-                TickerList = config.Tickers.Split(',');
-            if (config.Currencies != null)
-                Currencies = config.Currencies.Split(',');
-
-            //Need to keep strategy id and loop through multiple account configs.
-            AccountConfigList = config.Strategies[0].Accounts;
+            OandaAccount accountInfo = new OandaAccount();
+            accountInfo.Id = accountId;
+            accountInfo.Name=acConfig.Name;
+            accountInfo.Type = acConfig.Type;
+            return accountInfo;
         }
-        public string GetExchangeName()
+        public void UpdateAccount(OandaAccount act, List<IndexData> posIndexList)
         {
-            return Name;
-        }
 
-        public string GetMarketName()
-        {
-            return MarketName;
         }
-
-        public string[] GetTickerList()
-        {
-            return TickerList;
-        }
-
-        public string[] GetCurrencyList()
-        {
-            return Currencies;
-        }
-
-        public abstract decimal GetCurrentPrice(string symbol, string mode);
-        public abstract Quote GetQuote(string symbol);
-        public abstract IEnumerable<Quote> GetQuoteList(string accountId, string mode);
-        public abstract bool PlaceOrder(Order order, string accountId);
-        public abstract Order GetOrderInfo(string orderId);
-        public abstract decimal GetAvailablePrinciple(string currency);
-        public abstract IAccount GetAccountDetails(string accountId);
-        public abstract void GetAccountChanges(IAccount acnt);
-        public abstract IEnumerable<Position> GetOpenPositions(string accountId);
-        public abstract Position GetOpenPosition(string symbol, string accountId);
-        public abstract IEnumerable<TradeData> GetOpenTrades(string symbol, string accountId);
-        public abstract decimal GetLastTradePrice(string tradeId, string accountId);
-       // public abstract Transaction GetTransactionInfo(string transId, string accountId);
-        //public abstract decimal GetAvailableMargin();
-        public abstract bool CloseTrade(TradeData trdData, string accountId);
-        //public abstract void SetAccountId(string accId);
-        public abstract List<TDMData> GetSymbolPriceList(string symbol, DateTime startDate);
     }
 }
